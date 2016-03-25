@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+helping_hand()
+{
+	echo -e "Options:"
+	echo -e "\tos \t for installed operating system name and arch"
+	echo -e "\tcpu \t for CPU information"
+	echo -e "\tgpu \t for GPU information"
+	echo -e "\tkernel \t for kernel version"
+	echo -e "\nThere's always someone behind you, helping you at every single step of the way"
+}
+
+cpu()
+{
+	cpu="$(grep "^model name" /proc/cpuinfo |cut -d":" -f2 |tail --lines 1| tail -c +2)"
+	echo $cpu
+}
+
+gpu()
+{
+	gpu="$(lspci |grep "VGA compatible controller" |cut -d":" -f3 |tail -c +2)"
+	echo $gpu
+}
+
+os()
+{
+	os_name="$(grep "^PRETTY_NAME" /etc/os-release |cut -d"=" -f2| cut -d'"' -f2) $(uname -m)"
+	echo $os_name
+}
+
+kernel()
+{
+	kernel="$(uname -r)"
+	echo $kernel
+}
+
+all()
+{
+	cpu
+	gpu
+	os
+	kernel
+}
+for i in "$@"
+do
+	if [ "$i" == "all" ]
+	then
+		all
+	fi	
+
+	if [ "$i" == "cpu" ]
+	then
+		cpu
+	fi
+
+	if [ "$i" == "gpu" ]
+	then
+		gpu
+	fi
+
+	if [ "$i" == "os" ]
+	then
+		os
+	fi
+
+	if [ "$i" == "kernel" ]
+	then
+		kernel
+	fi
+	
+	if [ "$i" == "help" ]
+	then
+		helping_hand
+	fi
+done
