@@ -1,75 +1,136 @@
 #!/usr/bin/env bash
+# Assembled by dawidd6
 
-helping_hand()
+# print functions
+#####################################################################################
+print_help()
 {
 	echo -e "Options:"
-	echo -e "\tos \t for installed operating system name and arch"
-	echo -e "\tcpu \t for CPU information"
-	echo -e "\tgpu \t for GPU information"
-	echo -e "\tkernel \t for kernel version"
+	echo -e "\tall \t\t print all informations listed below"
+	echo -e "\tos \t\t operating system name and arch"
+	echo -e "\tcpu \t\t CPU information"
+	echo -e "\tgpu \t\t GPU information"
+	echo -e "\tkernel \t\t kernel version"
+	echo -e "\tuptime \t\t machine uptime"
+	echo -e "\tshell \t\t default shell"
+	echo -e "\tbattery \t current battery status"
+	echo -e "\tram \t\t current ram usage"
+	echo -e "\tdisk \t\t main disk usage"
 	echo -e "\nThere's always someone behind you, helping you at every single step of the way"
 }
 
-cpu()
+print_error()
 {
-	cpu="$(grep "^model name" /proc/cpuinfo |cut -d":" -f2 |tail --lines 1| tail -c +2)"
-	echo $cpu
+	echo -e "minifetch: Wrong argument"
+	echo -e "Write „minifetch help” for informations"
+}
+#####################################################################################
+
+# get functions
+#####################################################################################
+get_cpu()
+{
+	cpu="$(grep "^model name" /proc/cpuinfo |cut -d":" -f2 |tail -n 1| tail -c +2)"
+	echo "$cpu"
 }
 
-gpu()
+get_gpu()
 {
 	gpu="$(lspci |grep "VGA compatible controller" |cut -d":" -f3 |tail -c +2)"
-	echo $gpu
+	echo "$gpu"
 }
 
-os()
+get_os()
 {
-	os_name="$(grep "^PRETTY_NAME" /etc/os-release |cut -d"=" -f2| cut -d'"' -f2) $(uname -m)"
-	echo $os_name
+	os="$(grep "^PRETTY_NAME" /etc/os-release |cut -d"=" -f2| cut -d'"' -f2) $(uname -m)"
+	echo "$os"
 }
 
-kernel()
+get_kernel()
 {
 	kernel="$(uname -r)"
-	echo $kernel
+	echo "$kernel"
 }
 
-all()
+get_uptime()
 {
-	cpu
-	gpu
-	os
-	kernel
+	uptime="$(uptime -p)"
+	echo "$uptime"
 }
-for i in "$@"
-do
-	if [ "$i" == "all" ]
-	then
-		all
-	fi	
 
-	if [ "$i" == "cpu" ]
-	then
-		cpu
-	fi
+get_shell()
+{
+	shell="$(echo $SHELL)"
+	echo "$shell"
+}
 
-	if [ "$i" == "gpu" ]
+get_battery()
+{
+	if [ -d /sys/class/power_supply/BAT1/ ]
+	then	
+		battery="$(cat /sys/class/power_supply/BAT1/capacity)% $(cat /sys/class/power_supply/BAT1/status)"
+	elif [ -d /sys/class/power_supply/BAT0/ ]
 	then
-		gpu
+		battery="$(cat /sys/class/power_supply/BAT0/capacity)% $(cat /sys/class/power_supply/BAT0/status)"
 	fi
+	echo "$battery"
+}
 
-	if [ "$i" == "os" ]
-	then
-		os
-	fi
+get_ram()
+{
+	ram_used="$(cat /proc/meminfo |awk '/^Active:/ {print $2;}')"
+	ram_total="$(cat /proc/meminfo |awk '/^MemTotal:/ {print $2;}')"
+	ram_used=$[$ram_used/1024]
+	ram_total=$[$ram_total/1024]
+	echo ""$ram_used"MB / "$ram_total"MB"
+}
 
-	if [ "$i" == "kernel" ]
-	then
-		kernel
-	fi
+get_disk()
+{
+	disk_total="$(df -h |grep "/dev/sda" |awk '///dev//sda/ {print $2;}')"
+	disk_used="$(df -h |grep "/dev/sda" |awk '///dev//sda/ {print $3;}')"
+	echo ""$disk_used" / "$disk_total""
+}
+
+get_all()
+{
 	
-	if [ "$i" == "help" ]
-	then
-		helping_hand
-	fi
-done
+	color_green_start="\e[1;32m"
+	color_green_end="\e[0m"
+	echo -e ""$color_green_start"CPU:"$color_green_end" \t\t$(get_cpu)"
+	echo -e ""$color_green_start"GPU:"$color_green_end" \t\t$(get_gpu)"
+	echo -e ""$color_green_start"OS:"$color_green_end" \t\t$(get_os)"
+	echo -e ""$color_green_start"Kernel:"$color_green_end" \t$(get_kernel)"
+	echo -e ""$color_green_start"Uptime:"$color_green_end" \t$(get_uptime)"
+	echo -e ""$color_green_start"Shell:"$color_green_end" \t\t$(get_shell)"
+	echo -e ""$color_green_start"Battery:"$color_green_end" \t$(get_battery)"
+	echo -e ""$color_green_start"Ram:"$color_green_end" \t\t$(get_ram)"
+	echo -e ""$color_green_start"Disk:"$color_green_end" \t\t$(get_disk)"
+}
+#####################################################################################
+
+# main
+#####################################################################################
+if [ "$#" == "0" ]
+then
+	print_help
+else
+	for i in "$@"
+	do
+		case "$i" in
+  		"help") print_help ;;
+  		"cpu") get_cpu ;;
+  		"gpu") get_gpu ;;
+  		"os") get_os ;;
+  		"kernel") get_kernel ;;
+		"uptime") get_uptime ;;
+		"shell") get_shell ;;
+		"battery") get_battery ;;
+		"ram") get_ram ;;
+		"disk") get_disk ;;
+  		"all") get_all ;;
+		*) print_error ;;
+		esac
+	done
+fi
+#####################################################################################
