@@ -3,6 +3,7 @@ all:
 	@echo "Type 'make uninstall' (root) to uninstall minifetch"
 
 install:
+	install -m755 -d $(DESTDIR)/usr/bin
 	install -m755 minifetch $(DESTDIR)/usr/bin
 
 uninstall:
