@@ -1,14 +1,14 @@
 TARGET=minifetch
-DESTDIR=/usr/bin/
+DESTDIR=
 
 help:
 	@echo "Type 'make install' (root) to install minifetch"
 	@echo "Type 'make uninstall' (root) to uninstall minifetch"
 
 install:
-	install $(TARGET) $(DESTDIR)
+	install $(TARGET) $(DESTDIR)/usr/bin
 
 uninstall:
-	rm $(DESTDIR)$(TARGET)
+	rm $(DESTDIR)/usr/bin/$(TARGET)
 
 .PHONY: install uninstall
