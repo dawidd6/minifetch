@@ -23,8 +23,9 @@ print_help()
 
 print_error()
 {
-	echo -e "minifetch: Wrong argument"
+	echo -e "minifetch: wrong argument"
 	echo -e "Write „minifetch help” for informations"
+	return 1
 }
 #####################################################################################
 
