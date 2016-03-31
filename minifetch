@@ -87,8 +87,8 @@ get_ram()
 
 get_disk()
 {
-	disk_total="$(df -h |grep "/dev/sda" |awk '///dev//sda/ {print $2;}')"
-	disk_used="$(df -h |grep "/dev/sda" |awk '///dev//sda/ {print $3;}')"
+	disk_total="$(df -h |grep "/dev/sda" |awk '//dev//sda/ {print $2;}')"
+	disk_used="$(df -h |grep "/dev/sda" |awk '//dev//sda/ {print $3;}')"
 	echo ""$disk_used" / "$disk_total""
 }
 
