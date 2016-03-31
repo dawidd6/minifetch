@@ -18,6 +18,7 @@ print_help()
 	echo -e "\tdisk \t\t main disk usage"
 	echo -e "\tpkgs \t\t count installed packages"
 	echo -e "\tsong \t\t current playing song (mpc)"
+	echo -e "\tvol \t\t master volume and state"
 }
 
 print_error()
@@ -96,21 +97,36 @@ get_pkgs()
 	if [ -d /etc/dpkg ]; then
 		pkgs=$[$(dpkg -l |wc -l)-6]
 	elif [ -e /etc/pacman.conf ]; then
-		pkgs=$(pacman -Qq |wc -l)
+		pkgs="$(pacman -Qq |wc -l)"
 	elif [ -d /etc/apk ]; then
-		pkgs=$(apk info |wc -l)
+		pkgs="$(apk info |wc -l)"
 	fi
-	echo $pkgs	
+	echo "$pkgs"
 }
 
 get_song()
 {
 	if mpc version > /dev/null 2>&1; then
-		song=$(mpc current)
+		song="$(mpc current)"
 	else
 		song="Unknown"
 	fi
-	echo $song
+	echo "$song"
+}
+
+get_vol()
+{
+	if amixer > /dev/null 2>&1; then
+	
+		if pulseaudio --check > /dev/null 2>&1; then
+			volume="$(amixer -D pulse get Master |awk '/Front Left:/ {print $5;}' |cut -d"[" -f2 |cut -d"]" -f1)"
+			state="$(amixer -D pulse get Master |awk '/Front Left:/ {print $6;}' |cut -d"[" -f2 |cut -d"]" -f1)"
+		else
+			volume="$(amixer get Master |awk '/Front Left:/ {print $5;}' |cut -d"[" -f2 |cut -d"]" -f1)"
+                	state="$(amixer get Master |awk '/Front Left:/ {print $7;}' |cut -d"[" -f2 |cut -d"]" -f1)"
+		fi
+	fi
+	echo ""$volume" "$state""
 }
 
 get_all()
@@ -129,6 +145,7 @@ get_all()
 	echo -e ""$color_green_start"Disk:"$color_green_end" \t\t$(get_disk)"
 	echo -e ""$color_green_start"Packages:"$color_green_end" \t$(get_pkgs)"
 	echo -e ""$color_green_start"Song:"$color_green_end" \t\t$(get_song)"
+	echo -e ""$color_green_start"Volume:"$color_green_end" \t$(get_vol)"
 }
 #####################################################################################
 
@@ -152,6 +169,7 @@ else
 		"disk") get_disk ;;
 		"pkgs") get_pkgs ;;
 		"song") get_song ;;
+		"vol") get_vol ;;
   		"all") get_all ;;
 		*) print_error ;;
 		esac
