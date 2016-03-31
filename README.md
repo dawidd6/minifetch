@@ -19,3 +19,4 @@ sudo make uninstall
 ### Tested on
 - Arch Linux
 - Ubuntu / Debian
+- Fedora
