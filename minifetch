@@ -16,7 +16,8 @@ print_help()
 	echo -e "\tbattery \t current battery status"
 	echo -e "\tram \t\t current ram usage"
 	echo -e "\tdisk \t\t main disk usage"
-	echo -e "\nThere's always someone behind you, helping you at every single step of the way"
+	echo -e "\tpkgs \t\t count installed packages"
+	echo -e "\tsong \t\t current playing song (mpc)"
 }
 
 print_error()
@@ -66,11 +67,9 @@ get_shell()
 
 get_battery()
 {
-	if [ -d /sys/class/power_supply/BAT1/ ]
-	then	
+	if [ -d /sys/class/power_supply/BAT1/ ]; then	
 		battery="$(cat /sys/class/power_supply/BAT1/capacity)% $(cat /sys/class/power_supply/BAT1/status)"
-	elif [ -d /sys/class/power_supply/BAT0/ ]
-	then
+	elif [ -d /sys/class/power_supply/BAT0/ ]; then
 		battery="$(cat /sys/class/power_supply/BAT0/capacity)% $(cat /sys/class/power_supply/BAT0/status)"
 	fi
 	echo "$battery"
@@ -92,6 +91,28 @@ get_disk()
 	echo ""$disk_used" / "$disk_total""
 }
 
+get_pkgs()
+{
+	if [ -d /etc/dpkg ]; then
+		pkgs=$[$(dpkg -l |wc -l)-6]
+	elif [ -e /etc/pacman.conf ]; then
+		pkgs=$(pacman -Qq |wc -l)
+	elif [ -d /etc/apk ]; then
+		pkgs=$(apk info |wc -l)
+	fi
+	echo $pkgs	
+}
+
+get_song()
+{
+	if mpc version > /dev/null 2>&1; then
+		song=$(mpc current)
+	else
+		song="Unknown"
+	fi
+	echo $song
+}
+
 get_all()
 {
 	
@@ -106,13 +127,14 @@ get_all()
 	echo -e ""$color_green_start"Battery:"$color_green_end" \t$(get_battery)"
 	echo -e ""$color_green_start"Ram:"$color_green_end" \t\t$(get_ram)"
 	echo -e ""$color_green_start"Disk:"$color_green_end" \t\t$(get_disk)"
+	echo -e ""$color_green_start"Packages:"$color_green_end" \t$(get_pkgs)"
+	echo -e ""$color_green_start"Song:"$color_green_end" \t\t$(get_song)"
 }
 #####################################################################################
 
 # main
 #####################################################################################
-if [ "$#" == "0" ]
-then
+if [ "$#" == "0" ]; then
 	print_help
 else
 	for i in "$@"
@@ -128,6 +150,8 @@ else
 		"battery") get_battery ;;
 		"ram") get_ram ;;
 		"disk") get_disk ;;
+		"pkgs") get_pkgs ;;
+		"song") get_song ;;
   		"all") get_all ;;
 		*) print_error ;;
 		esac
