@@ -13,5 +13,9 @@ https://aur.archlinux.org/packages/minifetch/
 ```sh
 sudo make uninstall
 ```
-### Screenshot
+### Screenshot 1.0
 ![Screen](http://i.imgur.com/RJAHFd9.png)
+
+### Tested on
+- Arch Linux
+- Ubuntu / Debian
