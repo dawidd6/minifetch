@@ -88,8 +88,13 @@ get_ram()
 
 get_disk()
 {
-	disk_total="$(df -h |grep "/dev/sda" |awk '//dev//sda/ {print $2;}')"
-	disk_used="$(df -h |grep "/dev/sda" |awk '//dev//sda/ {print $3;}')"
+	if df -h |grep -wq "/dev/mapper/fedora-root"; then
+		disk_total="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $2;}')"
+        	disk_used="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $3;}')"
+	else
+		disk_total="$(df -h |grep "/dev/sda" |awk '/dev/ {print $2;}')"
+		disk_used="$(df -h |grep "/dev/sda" |awk '/dev/ {print $3;}')"
+	fi
 	echo ""$disk_used" / "$disk_total""
 }
 
@@ -101,6 +106,8 @@ get_pkgs()
 		pkgs="$(pacman -Qq |wc -l)"
 	elif [ -d /etc/apk ]; then
 		pkgs="$(apk info |wc -l)"
+	elif [ -d /etc/dnf ]; then
+		pkgs=$[$(dnf list installed |wc -l)-2]
 	fi
 	echo "$pkgs"
 }
@@ -118,7 +125,6 @@ get_song()
 get_vol()
 {
 	if amixer > /dev/null 2>&1; then
-	
 		if pulseaudio --check > /dev/null 2>&1; then
 			volume="$(amixer -D pulse get Master |awk '/Front Left:/ {print $5;}' |cut -d"[" -f2 |cut -d"]" -f1)"
 			state="$(amixer -D pulse get Master |awk '/Front Left:/ {print $6;}' |cut -d"[" -f2 |cut -d"]" -f1)"
@@ -126,6 +132,8 @@ get_vol()
 			volume="$(amixer get Master |awk '/Front Left:/ {print $5;}' |cut -d"[" -f2 |cut -d"]" -f1)"
                 	state="$(amixer get Master |awk '/Front Left:/ {print $7;}' |cut -d"[" -f2 |cut -d"]" -f1)"
 		fi
+	else
+		volume="Unknown"
 	fi
 	echo ""$volume" "$state""
 }
