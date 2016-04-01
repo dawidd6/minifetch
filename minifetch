@@ -79,11 +79,12 @@ get_battery()
 
 get_ram()
 {
-	ram_used="$(cat /proc/meminfo |awk '/^Active:/ {print $2;}')"
 	ram_total="$(cat /proc/meminfo |awk '/^MemTotal:/ {print $2;}')"
+	ram_used=$[$ram_total-$(cat /proc/meminfo |awk '/^Cached:/ {print $2;}')-$(cat /proc/meminfo |awk '/^MemFree:/ {print $2;}')]
 	ram_used=$[$ram_used/1024]
 	ram_total=$[$ram_total/1024]
-	echo ""$ram_used"MB / "$ram_total"MB"
+	ram_percentage=$[100*$ram_used/$ram_total]
+	echo ""$ram_used"MB / "$ram_total"MB ("$ram_percentage"%)"
 }
 
 get_disk()
@@ -91,11 +92,13 @@ get_disk()
 	if df -h |grep -wq "/dev/mapper/fedora-root"; then
 		disk_total="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $2;}')"
         	disk_used="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $3;}')"
+		disk_percentage="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $5;}')"
 	else
 		disk_total="$(df -h |grep "/dev/sda" |awk '/dev/ {print $2;}')"
 		disk_used="$(df -h |grep "/dev/sda" |awk '/dev/ {print $3;}')"
+		disk_percentage="$(df -h |grep "/dev/sda" |awk '/dev/ {print $5;}')"
 	fi
-	echo ""$disk_used" / "$disk_total""
+	echo ""$disk_used" / "$disk_total" ("$disk_percentage")"
 }
 
 get_pkgs()
@@ -118,6 +121,9 @@ get_song()
 		song="$(mpc current)"
 	else
 		song="Unknown"
+	fi
+	if [ -z "$song" ]; then
+		song="Not playing"
 	fi
 	echo "$song"
 }
