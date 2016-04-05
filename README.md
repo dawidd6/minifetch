@@ -1,6 +1,6 @@
 # Minifetch
 
-[![Build Status](https://travis-ci.org/dawidd6/minifetch.svg?branch=master)](https://travis-ci.org/dawidd6/minifetch) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
+[![Build Status](https://travis-ci.org/dawidd6/minifetch.svg?branch=master)](https://travis-ci.org/dawidd6/minifetch) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md) [![Code Health](https://landscape.io/github/dawidd6/minifetch/master/landscape.svg?style=flat)](https://landscape.io/github/dawidd6/minifetch/master)
 
 ### Installation
 ```sh
