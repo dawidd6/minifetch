@@ -14,7 +14,7 @@ https://aur.archlinux.org/packages/minifetch/
 sudo make uninstall
 ```
 ### Screenshot 1.1
-![Screen](https://upload.vstanced.com/images/2016/04/06/Zrzutekranuz2016-04-0618-55-34.png)
+![Screen](https://upload.vstanced.com/images/2016/04/06/Zrzutekranuz2016-04-0618-55-34.png =700x600)
 
 ### Tested on
 - Arch Linux
