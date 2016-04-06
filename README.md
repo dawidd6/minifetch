@@ -13,10 +13,11 @@ https://aur.archlinux.org/packages/minifetch/
 ```sh
 sudo make uninstall
 ```
-### Screenshot 1.0
-![Screen](http://i.imgur.com/RJAHFd9.png)
+### Screenshot 1.1
+![Screen](https://upload.vstanced.com/images/2016/04/06/Zrzutekranuz2016-04-0618-55-34.png)
 
 ### Tested on
 - Arch Linux
 - Ubuntu / Debian
 - Fedora
+- CentOS

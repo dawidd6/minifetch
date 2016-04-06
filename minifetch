@@ -6,6 +6,7 @@
 print_help()
 {
 	echo -e "Options:"
+	echo -e "\thelp \t\t print this help message"
 	echo -e "\tall \t\t print all informations listed below"
 	echo -e "\tos \t\t operating system name and arch"
 	echo -e "\tcpu \t\t CPU information"

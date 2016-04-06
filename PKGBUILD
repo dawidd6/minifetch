@@ -1,6 +1,6 @@
 #Maintainer: dawidd6
 pkgname=minifetch
-pkgver=1.0
+pkgver=1.1
 pkgrel=1
 pkgdesc="Minimal system info fetcher"
 arch=('any')
