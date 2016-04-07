@@ -18,6 +18,7 @@ sudo make uninstall
 
 ### Tested on
 - Arch Linux
-- Ubuntu / Debian
+- Ubuntu
+- Debian
 - Fedora
 - CentOS
