@@ -6,7 +6,7 @@
 print_help()
 {
 	echo -e "Syntax: minifetch [OPTION] [OPTION] ...\n"
-	echo -e "Options:"
+	echo "Options:"
 	echo -e "\thelp \t\t print this help message"
 	echo -e "\tall \t\t print all informations listed below"
 	echo -e "\tos \t\t operating system name and arch"
@@ -25,8 +25,8 @@ print_help()
 
 print_error()
 {
-	echo -e "minifetch: wrong argument"
-	echo -e "Write „minifetch help” for informations"
+	echo "minifetch: wrong argument"
+	echo "Write „minifetch help” for informations"
 	return 1
 }
 #####################################################################################
