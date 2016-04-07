@@ -5,6 +5,7 @@
 #####################################################################################
 print_help()
 {
+	echo -e "Syntax: minifetch [OPTION] [OPTION] ...\n"
 	echo -e "Options:"
 	echo -e "\thelp \t\t print this help message"
 	echo -e "\tall \t\t print all informations listed below"
