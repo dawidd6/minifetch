@@ -21,6 +21,8 @@ print_help()
 	echo -e "\tpkgs \t\t count installed packages"
 	echo -e "\tsong \t\t current playing song (mpc)"
 	echo -e "\tvol \t\t master volume and state"
+	echo -e "\tpublicip \t\t get public IP"
+	echo -e "\tprivateip \t\t get private IP"
 }
 
 print_error()
@@ -166,6 +168,24 @@ get_all()
 	echo -e ""$color_green_start"Packages:"$color_green_end" \t$(get_pkgs)"
 	echo -e ""$color_green_start"Song:"$color_green_end" \t\t$(get_song)"
 	echo -e ""$color_green_start"Volume:"$color_green_end" \t$(get_vol)"
+	echo -e ""$color_green_start"Public IP:"$color_green_end" \t$(get_publicip)"
+	echo -e ""$color_green_start"Private IP:"$color_green_end" \t$(get_privateip)"
+}
+
+get_publicip()
+{
+	public_ip="$(curl -s ipecho.net/plain)"
+	echo "$public_ip"
+}
+
+get_privateip()
+{
+	if hostname --version |grep -wq inetutils; then
+	private_ip="$(hostname -i)"
+	else
+	private_ip="$(hostname -I)"
+	fi
+	echo "$private_ip"
 }
 #####################################################################################
 
@@ -177,6 +197,7 @@ else
 	for i in "$@"
 	do
 		case "$i" in
+		"all") get_all ;;
   		"help") print_help ;;
   		"cpu") get_cpu ;;
   		"gpu") get_gpu ;;
@@ -190,7 +211,8 @@ else
 		"pkgs") get_pkgs ;;
 		"song") get_song ;;
 		"vol") get_vol ;;
-  		"all") get_all ;;
+		"publicip") get_publicip ;;
+		"privateip") get_privateip ;;
 		*) print_error ;;
 		esac
 	done
