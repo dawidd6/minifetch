@@ -21,8 +21,8 @@ print_help()
 	echo -e "\tpkgs \t\t count installed packages"
 	echo -e "\tsong \t\t current playing song (mpc)"
 	echo -e "\tvol \t\t master volume and state"
-	echo -e "\tpublicip \t\t get public IP"
-	echo -e "\tprivateip \t\t get private IP"
+	echo -e "\tpublicip \t get public IP"
+	echo -e "\tprivateip \t get private IP"
 }
 
 print_error()
