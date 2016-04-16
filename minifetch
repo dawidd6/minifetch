@@ -127,8 +127,16 @@ get_pkgs()
 
 get_song()
 {
-	if mpc version > /dev/null 2>&1; then
-		song="$(mpc current)"
+	if hash mpc > /dev/null 2>&1; then
+		if timeout 2 mpc > /dev/null 2>&1; then
+			if [ -z "$(mpc current)" ]; then
+				song="Not Playing"
+			else
+				song="$(mpc current)"
+			fi
+		else
+			song="Unreachable"
+		fi
 	else
 		song="Unknown"
 	fi
