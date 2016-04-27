@@ -84,7 +84,7 @@ get_battery()
 get_ram()
 {
 	ram_total="$(cat /proc/meminfo |awk '/^MemTotal:/ {print $2;}')"
-	ram_used=$[$ram_total-$(cat /proc/meminfo |awk '/^Cached:/ {print $2;}')-$(cat /proc/meminfo |awk '/^MemFree:/ {print $2;}')]
+	ram_used=$[$ram_total-$(cat /proc/meminfo |awk '/^MemAvailable:/ {print $2;}')]
 	ram_used=$[$ram_used/1024]
 	ram_total=$[$ram_total/1024]
 	ram_percentage=$[100*$ram_used/$ram_total]
