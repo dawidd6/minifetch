@@ -23,6 +23,7 @@ print_help()
 	echo -e "\tvol \t\t master volume and state"
 	echo -e "\tpublicip \t get public IP"
 	echo -e "\tprivateip \t get private IP"
+	echo -e "\tbrightness \t get current brightness"
 }
 
 print_error()
@@ -73,7 +74,7 @@ get_shell()
 
 get_battery()
 {
-	if [ -d /sys/class/power_supply/BAT1/ ]; then	
+	if [ -d /sys/class/power_supply/BAT1/ ]; then
 		battery="$(cat /sys/class/power_supply/BAT1/capacity)% $(cat /sys/class/power_supply/BAT1/status)"
 	elif [ -d /sys/class/power_supply/BAT0/ ]; then
 		battery="$(cat /sys/class/power_supply/BAT0/capacity)% $(cat /sys/class/power_supply/BAT0/status)"
@@ -95,12 +96,12 @@ get_disk()
 {
 	if df -h |grep -wq "/dev/mapper/fedora-root"; then
 		disk_total="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $2;}')"
-        	disk_used="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $3;}')"
+		disk_used="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $3;}')"
 		disk_percentage="$(df -h |grep "/dev/mapper/fedora-root" |awk '/dev/ {print $5;}')"
 	elif df -h |grep -wq "/dev/mapper/centos-root"; then
-                disk_total="$(df -h |grep "/dev/mapper/centos-root" |awk '/dev/ {print $2;}')"
-                disk_used="$(df -h |grep "/dev/mapper/centos-root" |awk '/dev/ {print $3;}')"
-                disk_percentage="$(df -h |grep "/dev/mapper/centos-root" |awk '/dev/ {print $5;}')"
+		disk_total="$(df -h |grep "/dev/mapper/centos-root" |awk '/dev/ {print $2;}')"
+		disk_used="$(df -h |grep "/dev/mapper/centos-root" |awk '/dev/ {print $3;}')"
+		disk_percentage="$(df -h |grep "/dev/mapper/centos-root" |awk '/dev/ {print $5;}')"
 	else
 		disk_total="$(df -h |grep "/dev/sda" |awk '/dev/ {print $2;}')"
 		disk_used="$(df -h |grep "/dev/sda" |awk '/dev/ {print $3;}')"
@@ -151,7 +152,7 @@ get_vol()
 			state="$(amixer -D pulse get Master |awk '/Front Left:/ {print $6;}' |cut -d"[" -f2 |cut -d"]" -f1)"
 		else
 			volume="$(amixer get Master |awk '/Front Left:/ {print $5;}' |cut -d"[" -f2 |cut -d"]" -f1)"
-                	state="$(amixer get Master |awk '/Front Left:/ {print $7;}' |cut -d"[" -f2 |cut -d"]" -f1)"
+			state="$(amixer get Master |awk '/Front Left:/ {print $7;}' |cut -d"[" -f2 |cut -d"]" -f1)"
 		fi
 	else
 		volume="Unknown"
@@ -161,7 +162,6 @@ get_vol()
 
 get_all()
 {
-	
 	color_green_start="\e[1;32m"
 	color_green_end="\e[0m"
 	echo -e ""$color_green_start"CPU:"$color_green_end" \t\t$(get_cpu)"
@@ -178,6 +178,7 @@ get_all()
 	echo -e ""$color_green_start"Volume:"$color_green_end" \t$(get_vol)"
 	echo -e ""$color_green_start"Public IP:"$color_green_end" \t$(get_publicip)"
 	echo -e ""$color_green_start"Private IP:"$color_green_end" \t$(get_privateip)"
+	echo -e ""$color_green_start"Brightness:"$color_green_end" \t$(get_brightness)"
 }
 
 get_publicip()
@@ -189,11 +190,19 @@ get_publicip()
 get_privateip()
 {
 	if hostname --version |grep -wq inetutils; then
-	private_ip="$(hostname -i)"
+		private_ip="$(hostname -i)"
 	else
-	private_ip="$(hostname -I)"
+		private_ip="$(hostname -I)"
 	fi
 	echo "$private_ip"
+}
+
+get_brightness()
+{
+	current_brightness=$(cat /sys/class/backlight/intel_backlight/actual_brightness)
+	max_brightness=$(cat /sys/class/backlight/intel_backlight/max_brightness)
+	brightness=$[$current_brightness*100/$max_brightness]
+	echo "$brightness%"
 }
 #####################################################################################
 
@@ -202,26 +211,26 @@ get_privateip()
 if [ "$#" == "0" ]; then
 	print_help
 else
-	for i in "$@"
-	do
+	for i in "$@"; do
 		case "$i" in
-		"all") get_all ;;
-  		"help") print_help ;;
-  		"cpu") get_cpu ;;
-  		"gpu") get_gpu ;;
-  		"os") get_os ;;
-  		"kernel") get_kernel ;;
-		"uptime") get_uptime ;;
-		"shell") get_shell ;;
-		"battery") get_battery ;;
-		"ram") get_ram ;;
-		"disk") get_disk ;;
-		"pkgs") get_pkgs ;;
-		"song") get_song ;;
-		"vol") get_vol ;;
-		"publicip") get_publicip ;;
-		"privateip") get_privateip ;;
-		*) print_error ;;
+			"all") get_all ;;
+			"help") print_help ;;
+			"cpu") get_cpu ;;
+			"gpu") get_gpu ;;
+			"os") get_os ;;
+			"kernel") get_kernel ;;
+			"uptime") get_uptime ;;
+			"shell") get_shell ;;
+			"battery") get_battery ;;
+			"ram") get_ram ;;
+			"disk") get_disk ;;
+			"pkgs") get_pkgs ;;
+			"song") get_song ;;
+			"vol") get_vol ;;
+			"publicip") get_publicip ;;
+			"privateip") get_privateip ;;
+			"brightness") get_brightness ;;
+			*) print_error ;;
 		esac
 	done
 fi
