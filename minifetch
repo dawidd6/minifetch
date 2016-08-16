@@ -24,6 +24,7 @@ print_help()
 	echo -e "\tpublicip \t get public IP"
 	echo -e "\tprivateip \t get private IP"
 	echo -e "\tbrightness \t get current brightness"
+	echo -e "\tloadavg \t get 1 minute average load"
 }
 
 print_error()
@@ -160,27 +161,6 @@ get_vol()
 	echo ""$volume" "$state""
 }
 
-get_all()
-{
-	color_green_start="\e[1;32m"
-	color_green_end="\e[0m"
-	echo -e ""$color_green_start"CPU:"$color_green_end" \t\t$(get_cpu)"
-	echo -e ""$color_green_start"GPU:"$color_green_end" \t\t$(get_gpu)"
-	echo -e ""$color_green_start"OS:"$color_green_end" \t\t$(get_os)"
-	echo -e ""$color_green_start"Kernel:"$color_green_end" \t$(get_kernel)"
-	echo -e ""$color_green_start"Uptime:"$color_green_end" \t$(get_uptime)"
-	echo -e ""$color_green_start"Shell:"$color_green_end" \t\t$(get_shell)"
-	echo -e ""$color_green_start"Battery:"$color_green_end" \t$(get_battery)"
-	echo -e ""$color_green_start"Ram:"$color_green_end" \t\t$(get_ram)"
-	echo -e ""$color_green_start"Disk:"$color_green_end" \t\t$(get_disk)"
-	echo -e ""$color_green_start"Packages:"$color_green_end" \t$(get_pkgs)"
-	echo -e ""$color_green_start"Song:"$color_green_end" \t\t$(get_song)"
-	echo -e ""$color_green_start"Volume:"$color_green_end" \t$(get_vol)"
-	echo -e ""$color_green_start"Public IP:"$color_green_end" \t$(get_publicip)"
-	echo -e ""$color_green_start"Private IP:"$color_green_end" \t$(get_privateip)"
-	echo -e ""$color_green_start"Brightness:"$color_green_end" \t$(get_brightness)"
-}
-
 get_publicip()
 {
 	public_ip="$(curl -s ipecho.net/plain)"
@@ -203,6 +183,37 @@ get_brightness()
 	max_brightness=$(cat /sys/class/backlight/intel_backlight/max_brightness)
 	brightness=$[$current_brightness*100/$max_brightness]
 	echo "$brightness%"
+}
+
+get_loadavg()
+{
+	cores=$(grep -c processor /proc/cpuinfo)
+	load1m=$(echo "`awk '{print $1}' /proc/loadavg` * 100" |bc |cut -d'.' -f1)
+	load=$[$load1m/$cores]
+	echo "$load%"
+
+}
+
+get_all()
+{
+	color_green_start="\e[1;32m"
+	color_green_end="\e[0m"
+	echo -e ""$color_green_start"CPU:"$color_green_end" \t\t$(get_cpu)"
+	echo -e ""$color_green_start"GPU:"$color_green_end" \t\t$(get_gpu)"
+	echo -e ""$color_green_start"OS:"$color_green_end" \t\t$(get_os)"
+	echo -e ""$color_green_start"Kernel:"$color_green_end" \t$(get_kernel)"
+	echo -e ""$color_green_start"Uptime:"$color_green_end" \t$(get_uptime)"
+	echo -e ""$color_green_start"Shell:"$color_green_end" \t\t$(get_shell)"
+	echo -e ""$color_green_start"Battery:"$color_green_end" \t$(get_battery)"
+	echo -e ""$color_green_start"Ram:"$color_green_end" \t\t$(get_ram)"
+	echo -e ""$color_green_start"Disk:"$color_green_end" \t\t$(get_disk)"
+	echo -e ""$color_green_start"Packages:"$color_green_end" \t$(get_pkgs)"
+	echo -e ""$color_green_start"Song:"$color_green_end" \t\t$(get_song)"
+	echo -e ""$color_green_start"Volume:"$color_green_end" \t$(get_vol)"
+	echo -e ""$color_green_start"Public IP:"$color_green_end" \t$(get_publicip)"
+	echo -e ""$color_green_start"Private IP:"$color_green_end" \t$(get_privateip)"
+	echo -e ""$color_green_start"Brightness:"$color_green_end" \t$(get_brightness)"
+	echo -e ""$color_green_start"Loadavg:"$color_green_end" \t$(get_loadavg)"
 }
 #####################################################################################
 
@@ -230,6 +241,7 @@ else
 			"publicip") get_publicip ;;
 			"privateip") get_privateip ;;
 			"brightness") get_brightness ;;
+			"load") get_loadavg ;;
 			*) print_error ;;
 		esac
 	done
